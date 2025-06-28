@@ -1,7 +1,10 @@
 const express = require('express');
 const router  = express.Router();
+const authMiddleware=require('../middleware/authMiddleware');
+const {getBookmarks,createBookmark}=require('../controllers/bookmarksController')
 
-// e.g. GET /api/auth/ping
-router.get('/ping', (req, res) => res.json({ ok: true }));
+router.use(authMiddleware);
+router.get('/',getBookmarks);
+router.post('/',createBookmark);
 
-module.exports = router;   // ← must export the router itself
+module.exports=router;

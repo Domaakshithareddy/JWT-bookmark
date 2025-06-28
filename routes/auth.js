@@ -1,7 +1,10 @@
 const express = require('express');
 const router  = express.Router();
 
-// e.g. GET /api/auth/ping
-router.get('/ping', (req, res) => res.json({ ok: true }));
+const { signupUser,loginUser,refreshAccessToken,logoutUser }=require('../controllers/authController');
+router.post('/signup',signupUser);
+router.post('/login',loginUser);
+router.post('/token',refreshAccessToken);
+router.delete('/logout',logoutUser);
 
-module.exports = router;   // ← must export the router itself
+module.exports=router;

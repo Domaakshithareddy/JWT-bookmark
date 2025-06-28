@@ -10,10 +10,10 @@ const signupUser=async(req,res)=>{
         const existing=await User.findOne({email});
         if (existing) return res.status(400).json({message:'User already exists'});
         const newUser=new User({email,password});
-        const accessToken=new createAccessToken({userId:newUser._id});
-        const refreshToken=new createRefreshToken({userId:newUser._id});
+        const accessToken=createAccessToken({userId:newUser._id});
+        const refreshToken=createRefreshToken({userId:newUser._id});
 
-        newUser.refreshTokens.push(refreshToken);
+        newUser.refreshToken.push(refreshToken);
         await newUser.save();
         sendTokens(res,accessToken,refreshToken);
     }
@@ -31,10 +31,10 @@ const loginUser=async(req,res)=>{
         const isMatch=await bcrypt.compare(password,user.password)
         if (!isMatch) return res.status(401).json({message:'Invalid cred'});
 
-        const accessToken=new createAccessToken({userId:newUser._id});
-        const refreshToken=new createRefreshToken({userId:newUser._id});
+        const accessToken=createAccessToken({userId:user._id});
+        const refreshToken=createRefreshToken({userId:user._id});
 
-        user.refreshTokens.push(refreshToken);
+        user.refreshToken.push(refreshToken);
         await user.save();
         sendTokens(res,accessToken,refreshToken);
     }
@@ -50,12 +50,12 @@ const refreshAccessToken=async(req,res)=>{
     try{
         const payload=jwt.verify(refreshToken, process.env.REFRESH_TOKEN);
         const user=await User.findById(payload.userId);
-        if (!user || !user.refreshTokens.includes(refreshToken)) {
+        if (!user || !user.refreshToken.includes(refreshToken)) {
             return res.status(403).json({message:'Invalid refresh token'});
         }
         const newRefresh=createRefreshToken({userId:user._id});
-        user.refreshTokens=user.refreshTokens.filter(rt=>rt!==refreshToken);
-        user.refreshTokens.push(newRefresh);
+        user.refreshToken=user.refreshToken.filter(rt=>rt!==refreshToken);
+        user.refreshToken.push(newRefresh);
         await user.save();
         const newAccess=createAccessToken({userId:user._id});
         sendTokens(res,newAccess,newRefresh);
@@ -72,7 +72,7 @@ const logoutUser=async (req,res)=>{
         const payload=jwt.verify(refreshToken,process.env.REFRESH_TOKEN);
         const user=await User.findById(payload.userId);
         if (!user) return res.status(400).json({ message: 'User not found' });
-        user.refreshTokens=user.refreshTokens.filter(rt=>rt!==refreshToken);
+        user.refreshToken=user.refreshToken.filter(rt=>rt!==refreshToken);
         await user.save();
         res.status(204).send();
     }
