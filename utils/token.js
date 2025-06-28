@@ -5,7 +5,7 @@ function createAccessToken(payload){
     return jwt.sign(
         payload,
         process.env.ACCESS_TOKEN,
-        {expiresIn:'5m'}
+        {expiresIn:'10m'}
     );
 }
 
@@ -13,7 +13,7 @@ function createRefreshToken(payload){
     return jwt.sign(
         payload,
         process.env.REFRESH_TOKEN,
-        {expiresIn:'10m'}
+        {expiresIn:'15m'}
     );
 }
 
