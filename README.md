@@ -10,6 +10,3 @@ A secure RESTful API for managing personal bookmarks, built with Node.js, Expres
 - MongoDB data storage using Mongoose
 - Middleware for route protection
 - CORS-enabled backend for frontend integration
-
-## Project Structure
-
